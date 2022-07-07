@@ -1,4 +1,8 @@
 import abc
+import numpy as np
+import jax.numpy as jnp
+
+from typing import List
 from jax import grad
 
 class VectorField(abc.ABC):
@@ -27,18 +31,41 @@ class FunctionalPotentialField(PotentialField):
         return self.f(x)
 
 class LinearCombinationVectorField(VectorField):
-    def __init__(self, s1, s2, a1 = 0.5, a2 = 0.5):
-        self.s1 = s1
-        self.s2 = s2
-        self.a1 = a1
-        self.a2 = a2 
+    def __init__(self, vs: List[VectorField], cs: List[float] = None):
+        assert len(vs) >= 1, "LinearCombinationVectorField must wrap at least 1 base field"
+        if cs is None:
+            cs = [1 / len(vs)] * len(vs)
+        self.cs = cs 
+        self.vs = vs
+
     def get_gradient(self, x):
-        return self.a1 * self.s1.get_gradient(x) \
-            + self.a2 * self.s2.get_gradient(x)
+        return sum([c * v.get_gradient(x) for c, v in zip(self.cs, self.vs)])
 
 class LinearCombinationPotentialField(LinearCombinationVectorField):
     def get_value(self, x):
-        return self.a1 * self.s1.get_value(x) \
-            + self.a2 * self.s2.get_value(x)
+        return sum([c * v.get_value(x) for c, v in zip(self.cs, self.vs)])
 
-        
+class SmoothTransformationVectorField(VectorField):
+    def __init__(self, v: VectorField, f):
+        self.v = v 
+        self.f = f
+    
+    def get_gradient(self, x):
+        return grad(self.f)(x) @ self.v.get_gradient(x)
+
+class SmoothTransformationVectorField(VectorField):
+    """
+    v: A vector field. 
+    f: A smooth mapping on R^n to R^n, implemented in Jax.
+    """
+    def __init__(self, v: VectorField, f):
+        self.v = v 
+        self.f = f
+    
+    def get_gradient(self, x):
+        return jnp.linalg.inv(grad(self.f)(x)) \
+            @ self.v.get_gradient(self.f(x))
+
+
+
+
