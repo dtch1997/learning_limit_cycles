@@ -74,6 +74,17 @@ class SmoothTransformationVectorField(VectorField):
         # By homomorphism, this is given by inv(Df_x) * v * f
         return jnp.linalg.inv(jacfwd(self.f)(x)) \
             @ self.v.get_gradient(self.f(x))
+    
+    
+class SmoothTransformationPotentialField(PotentialField):
+    def __init__(self, p: PotentialField, f):
+        self.p = p 
+        self.f = f
+    
+    def get_value(self, x):
+        # For a smooth function f, and potential
+        # function p, we provide the potential p(f(x))
+            return self.p.get_value(self.f(x))
 
 
 

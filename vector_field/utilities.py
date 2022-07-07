@@ -40,7 +40,10 @@ def plot_potential_field(
     R = jnp.sqrt(X**2 + Y**2)
     Z = jnp.zeros_like(R)
     for iy, ix in np.ndindex(R.shape):
-        value = p.get_value(R[iy, ix])
+        try:
+            value = p.get_value(R[iy, ix])
+        except:
+            value = p.get_value(jnp.array([X[iy, ix], Y[iy, ix]]))
         if min_clip or max_clip:
             value = jnp.clip(value, min_clip, max_clip)
         Z = Z.at[iy, ix].set(value)
