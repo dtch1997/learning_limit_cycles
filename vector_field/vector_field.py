@@ -3,7 +3,7 @@ import numpy as np
 import jax.numpy as jnp
 
 from typing import List
-from jax import grad
+from jax import grad, jacfwd
 
 class VectorField(abc.ABC):
     """Abstract class for a 2D vector field"""
@@ -63,7 +63,16 @@ class SmoothTransformationVectorField(VectorField):
         self.f = f
     
     def get_gradient(self, x):
-        return jnp.linalg.inv(grad(self.f)(x)) \
+
+        # Proof that this formula is correct: 
+        # 
+        # f: M --> N is a smooth map on manifolds
+        # Df_x: TM_x --> TN_x is its differential at x
+        # v: N --> TN is a vector field on N
+        # 
+        # We seek the image of v(x) under f. 
+        # By homomorphism, this is given by inv(Df_x) * v * f
+        return jnp.linalg.inv(jacfwd(self.f)(x)) \
             @ self.v.get_gradient(self.f(x))
 
 

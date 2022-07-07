@@ -59,4 +59,9 @@ def plot_vectors(v: VectorField, xs):
             head_width = 0.2,
             head_length = 0.2
         )
-    
+
+def get_rotational_matrix(theta):
+    return jnp.array([
+        [jnp.cos(theta), -jnp.sin(theta)], 
+        [jnp.sin(theta), jnp.cos(theta)]
+    ])
