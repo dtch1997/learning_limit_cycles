@@ -1,6 +1,7 @@
 import abc
 import numpy as np
 import torch
+import torch.nn as nn
 
 from typing import List
 from torch.autograd import grad
@@ -93,6 +94,25 @@ class SmoothTransformationPotentialField(PotentialField):
         # function p, we provide the potential p(f(x))
             return self.p.get_value(self.f(x))
 
+class TorchToNumpyPotentialFieldWrapper(PotentialField):
+    def __init__(self, f: nn.Module):
+        self.f = f 
+    
+    def get_value(self, x):
+        x_t = torch.from_numpy(x.astype(np.float32))
+        with torch.no_grad():
+            p_t = self.f(x_t)
+        return p_t.detach().cpu().numpy().astype(np.float64)
+
+class TorchToNumpyVectorFieldWrapper(VectorField):
+    def __init__(self, f: nn.Module):
+        self.f = f 
+    
+    def get_gradient(self, x):
+        x_t = torch.from_numpy(x.astype(np.float32))
+        with torch.no_grad():
+            p_t = self.f(x_t)
+        return p_t.detach().cpu().numpy().astype(np.float64)
 
 
 

@@ -42,8 +42,52 @@ def plot_vectors(v: VectorField, xs):
             head_length = 0.2
         )
 
+def plot_dyn_sys_data(xs, dot_xs):
+    """Plot vectors at given positions on vector field"""
+    fig, ax = plt.subplots(figsize=(5,5))
+    for x, dot_x in zip(xs, dot_xs):
+        ax.arrow(
+            *x, 
+            *(dot_x * 0.2),
+            head_width = 0.2,
+            head_length = 0.2
+        )
+
 def plot_histories(x_hists, **subplot_kwargs):
     fig, ax = plt.subplots(**subplot_kwargs)
     for xhist in x_hists:
-        ax.scatter(xhist[:,0], xhist[:,1], s=1)
+        ax.plot(xhist[:,0], xhist[:,1], s=1)
         ax.grid(True)
+
+def plot_section(
+    p,
+    rs: np.ndarray,
+    theta: float = 0,
+    **subplot_kwargs
+):
+    """ Plot a ray along [0, inf] in direction theta """
+    fig, ax = plt.subplots(**subplot_kwargs)
+    values = []
+    for r in rs:
+        x = r * np.cos(theta)
+        y = r * np.sin(theta)
+        value = p.get_value(np.array([x,y]))
+        values.append(value)
+    ax.plot(rs, values)
+
+def plot_sections(
+    p,
+    rs: np.ndarray,
+    thetas: np.ndarray,
+    **subplot_kwargs
+):
+    """ Plot a ray along [0, inf] in direction theta """
+    fig, ax = plt.subplots(**subplot_kwargs)
+    for theta in thetas:
+        values = []
+        for r in rs:
+            x = r * np.cos(theta)
+            y = r * np.sin(theta)
+            value = p.get_value(np.array([x,y]))
+            values.append(value)
+        ax.plot(rs, values)
