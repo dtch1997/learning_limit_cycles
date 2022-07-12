@@ -56,7 +56,7 @@ def plot_dyn_sys_data(xs, dot_xs):
 def plot_histories(x_hists, **subplot_kwargs):
     fig, ax = plt.subplots(**subplot_kwargs)
     for xhist in x_hists:
-        ax.plot(xhist[:,0], xhist[:,1], s=1)
+        ax.plot(xhist[:,0], xhist[:,1]) #, s=1)
         ax.grid(True)
 
 def plot_section(

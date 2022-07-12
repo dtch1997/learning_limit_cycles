@@ -3,3 +3,5 @@ matplotlib
 jax[cpu]
 ipykernel
 cvxpy
+torch
+functorch
