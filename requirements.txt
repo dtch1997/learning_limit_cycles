@@ -5,3 +5,4 @@ ipykernel
 cvxpy
 torch
 functorch
+notebook

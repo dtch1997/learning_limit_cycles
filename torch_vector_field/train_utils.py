@@ -10,9 +10,15 @@ def train(
     n_epochs: int = 10,
     grad_clip: float = 10,
     log_freq: int = 10,
+    device = None
 ):
+    if device is None:
+        device =  "cpu" # torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    net.to(device)
+
     criterion = nn.MSELoss()
-    optimizer = optim.SGD(net.parameters(), lr=learning_rate, momentum=momentum)
+    #optimizer = optim.SGD(net.parameters(), lr=learning_rate, momentum=momentum)
+    optimizer = optim.Adam(net.parameters(), lr=learning_rate)
 
     loss_history = []
     i = 0
@@ -22,6 +28,8 @@ def train(
         for _, data in enumerate(train_loader, 0):
             # get the inputs; data is a list of [inputs, labels]
             inputs, labels = data
+            inputs = inputs.to(device)
+            labels = labels.to(device)
             # zero the parameter gradients
             optimizer.zero_grad()
 
