@@ -6,3 +6,5 @@ cvxpy
 torch
 functorch
 notebook
+torchdiffeq
+FrEiA
